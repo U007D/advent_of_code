@@ -39,5 +39,16 @@ fn tests() {
                 assert!(env.result == expected_result);
             });
         });
+
+        ctx.when("fed a non-repeating sequence: 1212345", |ctx| {
+            ctx.before(|env| {
+                env.result = env.solver.sum_when_matches_next("1");
+            });
+            let expected_result = 0;
+
+            ctx.then("the result should be 0", move |env| {
+                assert!(env.result == expected_result);
+            });
+        });
     }));
 }
