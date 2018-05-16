@@ -15,7 +15,7 @@
         wrong_pub_self_convention)]
 // Safety-critical application lints (pedantic--use for safety-critical applications only)
 #![deny(cast_possible_truncation, cast_possible_wrap, cast_precision_loss, cast_sign_loss, float_cmp_const,
-        indexing_slicing,  integer_arithmetic, maybe_infinite_iter)]
+        indexing_slicing, integer_arithmetic, maybe_infinite_iter)]
 #![forbid(overflowing_literals, unused_must_use)]
 // End of safety-critical lint section
 
