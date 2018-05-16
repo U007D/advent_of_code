@@ -1,6 +1,4 @@
 extern crate hesl;
 
-mod SomeType;
-
+mod captcha_solver;
 use rspec::{given, run};
-use di::Container;

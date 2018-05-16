@@ -30,6 +30,7 @@ extern crate rspec;
 #[macro_use]
 extern crate hesl;
 
+mod captcha_solver;
 mod consts;
 mod di;
 mod error;
