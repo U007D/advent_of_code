@@ -16,7 +16,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", match *self {
             Error::InvalidUtf8Arg(ref os_string) => format!("{}: {:?}", MSG_ERR_INVALID_UTF8_ARG, os_string),
-            Error::NoneError => MSG_ERR_NONE_ERROR.to_string(),
+            Error::NoneError => MSG_ERR_INTERNAL_NONE_ERROR.to_string(),
             Error::InvalidInt(ref string) => format!("{}: {:?}", MSG_ERR_INVALID_INT, string),
             Error::NoImportData => MSG_ERR_NO_IMPORT_DATA.to_owned(),
         })

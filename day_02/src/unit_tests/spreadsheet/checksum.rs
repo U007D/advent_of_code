@@ -42,7 +42,7 @@ fn tests() {
             });
             let expected_result = Some(18);
 
-            ctx.then("the result should be failure to instantiate", move |env| {
+            ctx.then("the result should be 18", move |env| {
                 assert!(env.result.unwrap() == expected_result.unwrap());
             });
         });
