@@ -56,9 +56,31 @@ fn tests() {
             ctx.before(|env| {
                 env.result = Some(env.solver.sum_when_matches_next("11"));
             });
-            let expected_result = Some(Ok(1));
+            let expected_result = Some(Ok(2));
 
-            ctx.then("the result should be 1", move |env| {
+            ctx.then("the result should be 2", move |env| {
+                assert!(env.result == expected_result);
+            });
+        });
+
+        ctx.when("fed the problem sequence 1122", |ctx| {
+            ctx.before(|env| {
+                env.result = Some(env.solver.sum_when_matches_next("1122"));
+            });
+            let expected_result = Some(Ok(3));
+
+            ctx.then("the result should be 3", move |env| {
+                assert!(env.result == expected_result);
+            });
+        });
+
+        ctx.when("fed the problem sequence 1234", |ctx| {
+            ctx.before(|env| {
+                env.result = Some(env.solver.sum_when_matches_next("1234"));
+            });
+            let expected_result = Some(Ok(0));
+
+            ctx.then("the result should be 0", move |env| {
                 assert!(env.result == expected_result);
             });
         });
