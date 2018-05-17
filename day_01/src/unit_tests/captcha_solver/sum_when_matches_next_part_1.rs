@@ -1,8 +1,8 @@
 use super::*;
-use captcha_solver::CaptchaSolver;
+use captcha_solver::{CaptchaSolver, MatchDistance};
 use Result;
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 struct Env {
     solver: CaptchaSolver,
     result: Option<Result<usize>>,
@@ -11,14 +11,15 @@ struct Env {
 impl Env {
     fn new() -> Self {
         Self {
-            solver: CaptchaSolver::new(),
+            solver: CaptchaSolver::new(MatchDistance::NextElement),
             result: None,
         }
     }
 }
+
 #[test]
 fn tests() {
-    run(&given("an initialized CaptchaSolver", Env::new(), |ctx| {
+    run(&given("an initialized CaptchaSolver in NextElement matching mode", Env::new(), |ctx| {
         ctx.when("fed nothing", |ctx| {
             ctx.before(|env| {
                 env.result = Some(env.solver.sum_when_matches_next(""));
@@ -30,9 +31,20 @@ fn tests() {
             });
         });
 
-        ctx.when("fed two non-matching digits: 12", |ctx| {
+        ctx.when("fed a single digit: 1", |ctx| {
             ctx.before(|env| {
-                env.result = Some(env.solver.sum_when_matches_next("12"));
+                env.result = Some(env.solver.sum_when_matches_next("1"));
+            });
+            let expected_result = Some(Ok(1));
+
+            ctx.then("the result should be 1", move |env| {
+                assert!(env.result == expected_result);
+            });
+        });
+
+        ctx.when("fed a non-repeating sequence: 1212345", |ctx| {
+            ctx.before(|env| {
+                env.result = Some(env.solver.sum_when_matches_next("1212345"));
             });
             let expected_result = Some(Ok(0));
 
@@ -41,20 +53,31 @@ fn tests() {
             });
         });
 
-        ctx.when("fed a sequence with matches: 1212", |ctx| {
+        ctx.when("fed a repeating sequence: 11", |ctx| {
             ctx.before(|env| {
-                env.result = Some(env.solver.sum_when_matches_next("1212"));
+                env.result = Some(env.solver.sum_when_matches_next("11"));
             });
-            let expected_result = Some(Ok(6));
+            let expected_result = Some(Ok(2));
 
-            ctx.then("the result should be 6", move |env| {
+            ctx.then("the result should be 2", move |env| {
                 assert!(env.result == expected_result);
             });
         });
 
-        ctx.when("fed a sequence with matches: 1221", |ctx| {
+        ctx.when("fed the problem sequence 1122", |ctx| {
             ctx.before(|env| {
-                env.result = Some(env.solver.sum_when_matches_next("1221"));
+                env.result = Some(env.solver.sum_when_matches_next("1122"));
+            });
+            let expected_result = Some(Ok(3));
+
+            ctx.then("the result should be 3", move |env| {
+                assert!(env.result == expected_result);
+            });
+        });
+
+        ctx.when("fed the problem sequence 1234", |ctx| {
+            ctx.before(|env| {
+                env.result = Some(env.solver.sum_when_matches_next("1234"));
             });
             let expected_result = Some(Ok(0));
 
@@ -63,46 +86,24 @@ fn tests() {
             });
         });
 
-        ctx.when("fed a sequence with matches: 123425", |ctx| {
+        ctx.when("fed the problem sequence 91212129", |ctx| {
             ctx.before(|env| {
-                env.result = Some(env.solver.sum_when_matches_next("123425"));
+                env.result = Some(env.solver.sum_when_matches_next("91212129"));
             });
-            let expected_result = Some(Ok(4));
+            let expected_result = Some(Ok(9));
 
-            ctx.then("the result should be 4", move |env| {
+            ctx.then("the result should be 9", move |env| {
                 assert!(env.result == expected_result);
             });
         });
 
-        ctx.when("fed a sequence with matches: 123123", |ctx| {
-            ctx.before(|env| {
-                env.result = Some(env.solver.sum_when_matches_next("123123"));
-            });
-            let expected_result = Some(Ok(12));
-
-            ctx.then("the result should be 12", move |env| {
-                assert!(env.result == expected_result);
-            });
-        });
-
-        ctx.when("fed a sequence with matches: 12131415", |ctx| {
-            ctx.before(|env| {
-                env.result = Some(env.solver.sum_when_matches_next("12131415"));
-            });
-            let expected_result = Some(Ok(4));
-
-            ctx.then("the result should be 4", move |env| {
-                assert!(env.result == expected_result);
-            });
-        });
-
-        ctx.when("fed the final problem sequence", |ctx| {
+        ctx.when("fed the problem sequence 599452...67675", |ctx| {
             ctx.before(|env| {
                 env.result = Some(env.solver.sum_when_matches_next("5994521226795838486188872189952551475352929145357284983463678944777228139398117649129843853837124228353689551178129353548331779783742915361343229141538334688254819714813664439268791978215553677772838853328835345484711229767477729948473391228776486456686265114875686536926498634495695692252159373971631543594656954494117149294648876661157534851938933954787612146436571183144494679952452325989212481219139686138139314915852774628718443532415524776642877131763359413822986619312862889689472397776968662148753187767793762654133429349515324333877787925465541588584988827136676376128887819161672467142579261995482731878979284573246533688835226352691122169847832943513758924194232345988726741789247379184319782387757613138742817826316376233443521857881678228694863681971445442663251423184177628977899963919997529468354953548612966699526718649132789922584524556697715133163376463256225181833257692821331665532681288216949451276844419154245423434141834913951854551253339785533395949815115622811565999252555234944554473912359674379862182425695187593452363724591541992766651311175217218144998691121856882973825162368564156726989939993412963536831593196997676992942673571336164535927371229823236937293782396318237879715612956317715187757397815346635454412183198642637577528632393813964514681344162814122588795865169788121655353319233798811796765852443424783552419541481132132344487835757888468196543736833342945718867855493422435511348343711311624399744482832385998592864795271972577548584967433917322296752992127719964453376414665576196829945664941856493768794911984537445227285657716317974649417586528395488789946689914972732288276665356179889783557481819454699354317555417691494844812852232551189751386484638428296871436139489616192954267794441256929783839652519285835238736142997245189363849356454645663151314124885661919451447628964996797247781196891787171648169427894282768776275689124191811751135567692313571663637214298625367655969575699851121381872872875774999172839521617845847358966264291175387374464425566514426499166813392768677233356646752273398541814142523651415521363267414564886379863699323887278761615927993953372779567675"));
             });
-            let expected_result = Some(Ok(1292));
+            let expected_result = Some(Ok(1393));
 
-            ctx.then("the result should be 1292", move |env| {
+            ctx.then("the result should be 1393", move |env| {
                 assert!(env.result == expected_result);
             });
         });
