@@ -19,7 +19,7 @@
 #![forbid(overflowing_literals, unused_must_use)]
 // End of safety-critical lint section
 
-#![feature(associated_type_defaults, stmt_expr_attributes, try_trait, use_extern_macros)]
+#![feature(associated_type_defaults, stmt_expr_attributes, try_trait, use_extern_macros, try_from)]
 
 #[macro_use]
 extern crate failure;
@@ -34,6 +34,7 @@ mod captcha_solver;
 mod consts;
 mod di;
 mod error;
+mod extension_traits;
 #[cfg(test)]
 mod unit_tests;
 
