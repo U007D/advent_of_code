@@ -1,6 +1,6 @@
 extern crate hesl;
 
-mod some_type;
+mod spreadsheet;
 
+use super::*;
 use rspec::{given, run};
-use di::Container;
